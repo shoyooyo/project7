@@ -1,0 +1,71 @@
+So we are going to create the below
+    5 deployment files for
+        - for project 6 client
+        - for project 6 server
+        - for project 6 worker
+        - for redis
+        - for postgres
+    4 cluster ip config's for
+        - postgres
+        - redis
+        - server
+        - client
+    1 Postgres PVC to connect to posgres provide
+    1 ingress service 
+
+Roles and responsibility of each of the above
+
+Client - As we know, it is for putting the front-end
+server - Which takes the user's request action and fetches information from appropriate server
+worker - this is where the calculation happens
+redis - used for fast data access store
+postgres - long time data store
+Postgress pvc - Postgres Persistent Volume Claim (will read later)
+Ingress - will learn this later
+
+So how are we defining deployment config for each of these?
+
+Client - we write a config file which states as follows
+    create deployment file with the name (client-deployment)
+    with 3 replicas ( for high availability and access)
+    with the container name as "web"
+    which uses the image from project6client
+    and is accessible via containerPort 3000
+
+Server - same like "client" with changes to name, containerName, image and containerPort
+    and also environment variables are added (why you ask?, we will see in upcoming sections)
+
+worker - same ike "client" with changes to name, replicas, containerName, image and
+    most importantly no containerPort is defined here (you may think why ?)
+    cuz, the worker pod will be accessed by only redis (which we will define next)
+    since we are not defining any port, we need to provide environment variables so that redis can connect
+
+redis - same like "client" with changes to name, replicas, containerName, image and containerPort
+
+postgres - same like "client" with quite a few changes
+    including name, replicas, containerName, image, containerPort
+    with new addition of volumes, volumeMounts & environment variables
+
+
+
+kubectl create secret generic/docker-registry/tls <secret_name> --from-literal <key=value>
+
+from-literal = it means we are going to provide information via the command instead of a file.
+
+<secret_name> = the name which we provide for the propery
+
+when adding environment variables (refer worker or server deployment files)
+	- adding the value as 6379 or 5432 will throw error when apply using the kubectl command
+	- hence you need to add them as (value: '6379') and not (value: 6379)
+
+Ingress
+
+    ingress-nginx //community led nginx
+        setup will be different for aws, azure, gcp & local
+    kubernetes-ingress //led by the nginx
+
+Deployment is a type of "controller"
+
+Controller is something that works continuously to from current state to desired state.
+
+Henceforth, we have a controller for our ingress as well. 
