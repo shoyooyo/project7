@@ -1,0 +1,38 @@
+We need travis cli for the service account and hence we will create a container running travis cli
+
+Reason for a container ?
+
+the reason is, travis cli requires ruby to be pre-installed
+instead of installing ruby and then travis cli, it is simpler to run a travis cli based container
+this container is predefined
+
+steps to do so:
+
+docker run -it -v $(PWD):/app ruby:2.3 sh 
+//this starts the container which is running ruby:2.3 
+//additionally by using the -v command we are making the current directory to be volumed inside the container
+//the path inside of the container is '/app'
+
+gem install travis --no-document //this installs the "travis ci" cli (more or less like aws cli)
+
+//verify if travis is installed using the below command
+travis // say no if it asks for "Shell completion not installed" 
+travis login //enter your github credentials
+
+//**copy the service-account.json file into the volumed directory so we can use it in the container**
+
+//Syntax for below command is
+// travis encrypt-file <json_file_name> -r <repo_name_from_travis>
+// where -r refers to the repository
+// important note: the repository is case sensitive
+travis encrypt-file service-account.json -r shoyooyo/project7
+
+//the above command tells you to add one line into the travis yaml which looks like below
+    Please add the following to your build script (before_install stage in your .travis.yml, for instance):
+        "openssl aes-256-cbc -K $encrypted_0c35eebf403c_key -iv $encrypted_0c35eebf403c_iv -in service-account.json.enc -out service-account.json -d"
+// the above command basically decrypts the encrypted json file for usability purposes.
+//if you do ls in the /app directory, you'll notice that a ".enc" file was created as mentioned in the above command
+
+//now since the original json file has a encrypted format, we can go ahead and delete it
+
+//now we can delete the json file
