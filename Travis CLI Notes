@@ -36,3 +36,18 @@ travis encrypt-file service-account.json -r shoyooyo/project7
 //now since the original json file has a encrypted format, we can go ahead and delete it
 
 //now we can delete the json file
+
+docker build -t shoyooyo/project7client:latest -f ./client/Dockerfile ./client
+docker build -t shoyooyo/project7client:$SHA -f ./client/Dockerfile ./client
+docker build -t shoyooyo/project7server:latest -f ./server/Dockerfile ./server
+docker build -t shoyooyo/project7server:$SHA -f ./server/Dockerfile ./server
+docker build -t shoyooyo/project7worker:latest -f ./worker/Dockerfile ./worker
+docker build -t shoyooyo/project7worker:$SHA -f ./worker/Dockerfile ./worker
+
+docker push shoyooyo/project7client:latest 
+docker push shoyooyo/project7server:latest 
+docker push shoyooyo/project7worker:latest 
+
+docker push shoyooyo/project7client:$SHA
+docker push shoyooyo/project7server:$SHA
+docker push shoyooyo/project7worker:$SHA
