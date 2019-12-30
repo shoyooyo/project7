@@ -1,0 +1,20 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: the-born-geek-tls
+spec:
+  secretName: the-born-geek
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: theborngeek.co
+  dnsName:
+    - theborngeek.co
+    - www.theborngeek.co
+  acme:
+    config:
+      - http01:
+          ingressClass: nginx
+        domains:
+          - theborngeek.co
+          - www.theborngeek.com
